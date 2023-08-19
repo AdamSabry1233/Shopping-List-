@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping List App</title>
+    <style>
+        ul {
+            list-style-type: "\2610 ";
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Shopping List</h1>
+    <form id="myForm">
+        <label for="item">Add an item:</label>
+        <input id="item" type="text" name="item">
+        <button id="addItem">Add</button>
+        <button id="printButton">Print</button>
+    </form>
+    <ul id="shoppingList">
+        <!-- list items will go into this ul via DOM manipulation -->
+    </ul>
+    <script>
+const shoppingList = document.getElementById("shoppingList");
+const shoppingBag = [];
+
+const printButton = document.getElementById("printButton");
+printButton.addEventListener("click", printShoppingList);
+
+// Print function
+function printShoppingList() {
+    window.print(); // Initiates the browser's printing functionality
+}
+
+function getItem(event) {
+    event.preventDefault();
+    const item = document.getElementById("item").value;
+    if (item.trim() !== "" && !shoppingBag.includes(item)) {
+        shoppingBag.push(item);
+        shoppingBag.sort();
+        console.log("Item has been added to the shopping bag:", item);
+
+        document.getElementById("myForm").reset();
+        removeList();
+        makeList(); // Call the function to create DOM elements
+    } else {
+        console.log("Item already exists in the shopping bag", item);
+    }
+    console.log("Shopping bag contents:", shoppingBag);
+}
+
+function makeList() {
+    shoppingList.innerHTML = ""; // Clear the list before updating
+
+    for (const bagItem of shoppingBag) {
+        const listItem = document.createElement('li');
+        listItem.textContent = bagItem;
+        listItem.addEventListener("click", removeItem);
+        shoppingList.appendChild(listItem);
+    }
+}
+function removeList() {
+    while(shoppingList.firstChild) {
+        shoppingList.removeChild(shoppingList.firstChild);
+
+    }
+}
+function removeItem(event) {
+    const item = event.currentTarget.textContent;
+    const itemIndex = shoppingBag.indexOf(item);
+
+    if(itemIndex !== -1) {
+        shoppingBag.splice(itemIndex, 1); // Remove the item from the shoppingBag array
+        removeList(); // Remove old list
+        makeList(); // Update the DOM
+    }
+}
+
+const addItem = document.getElementById("addItem");
+addItem.addEventListener("click", getItem);
+
+    </script>
+</body>
+</html>
